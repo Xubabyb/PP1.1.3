@@ -9,15 +9,11 @@ public class Util {
     private static final String LOGIN = "root";
     private static final String PASSWORD = "12345";
 
-   public static Connection connection;
-   
+    public static Connection connection;
+
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            try {
-                connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
         }
         return connection;
     }
