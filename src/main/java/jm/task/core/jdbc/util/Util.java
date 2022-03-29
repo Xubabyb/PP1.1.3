@@ -9,7 +9,7 @@ public class Util {
     private static final String LOGIN = "root";
     private static final String PASSWORD = "12345";
 
-    public static Connection connection;
+    private static Connection connection;
 
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
