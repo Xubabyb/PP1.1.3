@@ -3,32 +3,33 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
     public UserDaoJDBCImpl() {
+
     }
 
+    //DDL запрос подходит для использования интерфейса Statement
     public void createUsersTable() {
         String query = "CREATE TABLE IF NOT EXISTS users " +
                 "( id BIGINT PRIMARY KEY AUTO_INCREMENT,name VARCHAR (30),lastname VARCHAR (30),age TINYINT)";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
-            preparedStatement.execute();
+        try (Connection connection = Util.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(query);
         } catch (SQLException e) {
             e.printStackTrace();
-
         }
     }
 
     public void dropUsersTable() {
         String query = "DROP TABLE IF EXISTS users";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
-            preparedStatement.execute();
+        try (Connection connection = Util.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -36,7 +37,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         String query = "INSERT INTO users (name, lastname, age) VALUE (?,?,?)";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
+        try (Connection connection = Util.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setString(3, String.valueOf(age));
@@ -49,8 +51,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         String query = "DELETE FROM users WHERE id = ?";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
-            /* DELETE - является оператором DML (Data Manipulation Language) - модет удалить часть данных
+        try (Connection connection = Util.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            /* DELETE - является оператором DML (Data Manipulation Language) - может удалить часть данных
              * из таблицы в соответствии с условием WHERE.
              * Операторы DDL управляют структурой, а операторы DML - её содержимым*/
             preparedStatement.setString(1, String.valueOf(id));
@@ -63,7 +66,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM users";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
+        try (Connection connection = Util.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
@@ -83,10 +87,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() {
         String query = "TRUNCATE users";
-        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(query)) {
+        try (Connection connection = Util.getConnection();
+             Statement statement = connection.createStatement()) {
             /* TRUNCATE - является оператором DDL (Data Definition Language) - удаляет все данные из таблицы
              * Операторы DDL управляют структурой, а операторы DML - её содержимым*/
-            preparedStatement.executeUpdate();
+            statement.executeUpdate(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }
