@@ -12,13 +12,13 @@ public class Util {
     private static Connection connection;
 
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
+        try {
+            if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
                 connection.setAutoCommit(false);
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return connection;
     }
